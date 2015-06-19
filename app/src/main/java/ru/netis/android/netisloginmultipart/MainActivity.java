@@ -3,6 +3,8 @@ package ru.netis.android.netisloginmultipart;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +19,7 @@ public class MainActivity extends Activity {
 //    private String url = "http://bah.yar.ru/test03";
     private String url = "http://stat.netis.ru/login.pl";
     private TextView myTextView;
+    HttpHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +37,12 @@ public class MainActivity extends Activity {
                 String param1 = edtText1.getText().toString();
                 String param2 = edtText2.getText().toString();
 
-//                item.setActionView(R.layout.progress);
-                SendHttpRequestTask t = new SendHttpRequestTask();
+                item.setActionView(R.layout.progress);
 
-                String[] params = new String[]{url, param1, param2};
+                helper = new HttpHelper();
+                SendHttpRequestTask t = new SendHttpRequestTask(url);
+
+                String[] params = new String[]{param1, param2};
                 t.execute(params);
             }
         });
@@ -45,6 +50,11 @@ public class MainActivity extends Activity {
 
 
     private class SendHttpRequestTask extends AsyncTask<String, Void, String> {
+
+        String url;
+        SendHttpRequestTask(String url){
+            this.url = url;
+        }
         @Override
         protected void onPreExecute() {
             item.setActionView(R.layout.progress);
@@ -52,23 +62,18 @@ public class MainActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            String url = params[0];
-            String param1 = params[1];
-            String param2 = params[2];
+            String param1 = params[0];
+            String param2 = params[1];
             String data = null;
-            HttpHelper helper = new HttpHelper();
 
             try {
                 helper.connectForMultipart(url);
                 helper.addFormPart("user", param1);
                 helper.addFormPart("password", param2);
-//                helper.addFormPart("submit", "%D0%92%D0%BE%D0%B9%D1%82%D0%B8");
-//                helper.addFormPart("submit", "Submit");
                 helper.finishMultipart();
                 data = helper.getResponse();
                 Log.d(LOG_TAG, "\r\n" + helper.getHeaders());
                 Log.d(LOG_TAG, "\r\n" + helper.getCookies());
-                helper.disConnect();
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -77,14 +82,20 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(String s) {
+            try {
+                helper.disConnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             item.setActionView(null);
-            myTextView.setText(s);
+            Spanned s1 = Html.fromHtml(s);
+            myTextView.setText(s1);
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         item = menu.getItem(0);
         return true;
     }

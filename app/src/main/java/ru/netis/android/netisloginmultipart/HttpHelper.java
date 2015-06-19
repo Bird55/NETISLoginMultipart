@@ -1,7 +1,6 @@
 package ru.netis.android.netisloginmultipart;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.InputStream;
@@ -9,7 +8,6 @@ import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,12 +16,10 @@ import java.util.Map;
  */
 public class HttpHelper {
 
-    private static final String LOG_TAG = "myLog";
+//    private static final String LOG_TAG = "myLog";
 
     private HttpURLConnection connection;
-    private DataOutputStream outputStream;
     private StringBuilder stringBuilder;
-    private List<String> cookies = null;
 
     private static final String delimiter = "--";
     private static final String boundary =  "SwA"+Long.toString(System.currentTimeMillis())+"SwA";
@@ -70,34 +66,30 @@ public class HttpHelper {
     public void finishMultipart() throws Exception {
         stringBuilder.append(delimiter).append(boundary).append(delimiter).append(lineEnd);
 
+        // Длинна запроса вставляется автоматически
+        // Query length is automatically inserted
 //        int length = stringBuilder.length();
 //        connection.setRequestProperty("Content-Length", Integer.toString(length));
 
         connection.connect();
-        outputStream = new DataOutputStream(connection.getOutputStream());
+        DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
 
-        Log.d(LOG_TAG, "finishMultipart: " + stringBuilder.toString());
+//        Log.d(LOG_TAG, "finishMultipart: " + stringBuilder.toString());
 
         outputStream.write((stringBuilder.toString()).getBytes());
-//        outputStream.flush();
-//        outputStream.close();
     }
 
     public String getHeaders(){
         StringBuilder ret = new StringBuilder();
         Map<String, List<String>> headerFields = connection.getHeaderFields();
-        Iterator<Map.Entry<String,List<String>>> entries = headerFields.entrySet().iterator();
-        while (entries.hasNext()){
-            Map.Entry<String,List<String>> entry = entries.next();
+        for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
             if (entry.getKey() != null) {
                 ret.append(entry.getKey()).append(":").append(lineEnd);
             } else {
                 ret.append(lineEnd);
             }
             List<String> list = entry.getValue();
-            Iterator<String> iterator = list.iterator();
-            while (iterator.hasNext()) {
-                String l = iterator.next();
+            for (String l : list) {
                 ret.append(l).append(lineEnd);
             }
         }
