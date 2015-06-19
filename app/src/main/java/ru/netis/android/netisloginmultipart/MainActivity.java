@@ -1,7 +1,8 @@
 package ru.netis.android.netisloginmultipart;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +14,7 @@ import android.widget.TextView;
 import java.net.CookieManager;
 import java.net.CookieStore;
 
-public class MainActivity extends Activity  implements AsyncTaskListener {
+public class MainActivity extends AppCompatActivity implements AsyncTaskListener {
 
     private static final String URL = "http://stat.netis.ru/login.pl";
     private TextView myTextView;
@@ -32,8 +33,6 @@ public class MainActivity extends Activity  implements AsyncTaskListener {
             e.printStackTrace();
         }
     }
-
-    private MenuItem item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +54,6 @@ public class MainActivity extends Activity  implements AsyncTaskListener {
 //                helper.addFormPart("user", param1);
                 helper.addFormPart("password", param2);
 
-                item.setActionView(R.layout.progress);
-
                 SendHttpRequestTask t = new SendHttpRequestTask(helper, listener);
                 t.execute();
             }
@@ -65,8 +62,26 @@ public class MainActivity extends Activity  implements AsyncTaskListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        item = menu.getItem(0);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        //noinspection SimplifiableIfStatement
+        switch (item.getItemId()) {
+            case R.id.action_login:
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivityForResult(intent, Constants.LOGIN_REQUEST);
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
         return true;
     }
 

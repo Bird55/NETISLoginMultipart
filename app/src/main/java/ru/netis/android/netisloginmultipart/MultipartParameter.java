@@ -21,7 +21,6 @@ public class MultipartParameter {
     }
 
     private String name;
-
     private String contentType;
     private String content;
 }

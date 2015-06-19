@@ -30,9 +30,9 @@ public class HttpHelper {
 
 
     public HttpHelper(String url) {
-//        cookies = null;
-        stringBuilder = new StringBuilder();
         this.url = url;
+
+        stringBuilder = new StringBuilder();
     }
 
     public void connectForMultipart() throws Exception {
@@ -43,7 +43,6 @@ public class HttpHelper {
         connection.setRequestMethod("POST");
         connection.setDoInput(true);
         connection.setDoOutput(true);
-//        connection.setUseCaches(false); // Don't use a Cached Copy
 
         if(msCookieManager.getCookieStore().getCookies().size() > 0) {
             connection.setRequestProperty("Cookie:",
@@ -118,6 +117,7 @@ public class HttpHelper {
     }
 
     public String getCookies() {
+/*
         Map<String, List<String>> headerFields = connection.getHeaderFields();
         List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
 
@@ -127,6 +127,7 @@ public class HttpHelper {
                 msCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
             }
         }
+*/
 
         if(msCookieManager.getCookieStore().getCookies().size() > 0) {
             return "Cookie: " + TextUtils.join(",", msCookieManager.getCookieStore().getCookies());
