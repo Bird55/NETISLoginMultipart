@@ -6,9 +6,11 @@ import android.util.Log;
 
 public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
     HttpHelper helper;
+    AsyncTaskListener listener;
 
-    public SendHttpRequestTask(HttpHelper helper) {
+    public SendHttpRequestTask(HttpHelper helper, AsyncTaskListener listener) {
         this.helper = helper;
+        this.listener = listener;
     }
 
     @Override
@@ -33,15 +35,14 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected void onPostExecute(String s) {
+    protected void onPostExecute(String data) {
         try {
             helper.disConnect();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d(MainActivity.LOG_TAG, "\r\n" + s);
-//        Spanned s1 = Html.fromHtml(s);
-//        myTextView.setText(s1);
+//        Log.d(MainActivity.LOG_TAG, "\r\n" + data);
+        listener.onAsyncTaskFinished(data);
     }
 }
 

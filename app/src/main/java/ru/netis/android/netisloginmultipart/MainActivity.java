@@ -47,6 +47,7 @@ public class MainActivity extends Activity  implements AsyncTaskListener {
         final EditText edtText1 = (EditText) findViewById(R.id.nameEditText);
         final EditText edtText2 = (EditText) findViewById(R.id.passwordEditText);
         Button btnUp1 = (Button) findViewById(R.id.button);
+        final AsyncTaskListener listener = this;
 
         btnUp1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,54 +59,11 @@ public class MainActivity extends Activity  implements AsyncTaskListener {
 
                 item.setActionView(R.layout.progress);
 
-                SendHttpRequestTask t = new SendHttpRequestTask(helper);
+                SendHttpRequestTask t = new SendHttpRequestTask(helper, listener);
                 t.execute();
             }
         });
     }
-
-/*
-    private class SendHttpRequestTask extends AsyncTask<String, Void, String> {
-
-
-        @Override
-        protected void onPreExecute() {
-            item.setActionView(R.layout.progress);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String param1 = params[0];
-            String param2 = params[1];
-            String data = null;
-
-            try {
-                helper.connectForMultipart();
-                helper.addFormPart("user", param1);
-                helper.addFormPart("password", param2);
-                helper.finishMultipart();
-                data = helper.getResponse();
-//                Log.d(LOG_TAG, "\r\n" + helper.getHeaders());
-                Log.d(LOG_TAG, "\r\n" + helper.getCookies());
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            try {
-                helper.disConnect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            item.setActionView(null);
-            Spanned s1 = Html.fromHtml(s);
-            myTextView.setText(s1);
-        }
-    }
-*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -115,7 +73,7 @@ public class MainActivity extends Activity  implements AsyncTaskListener {
     }
 
     @Override
-    public void onAsyncTaskFinished() {
-
+    public void onAsyncTaskFinished(String data) {
+        myTextView.setText(Html.fromHtml(data));
     }
 }
