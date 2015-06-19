@@ -5,8 +5,10 @@ import android.text.TextUtils;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +27,13 @@ public class HttpHelper {
     private static final String boundary =  "SwA"+Long.toString(System.currentTimeMillis())+"SwA";
 
     private static final String COOKIES_HEADER = "Set-Cookie";
-    private static CookieManager msCookieManager = new CookieManager();
+    private CookieManager msCookieManager;
     private static final String lineEnd = "\r\n";
 
 
-    public HttpHelper(String url) {
+    public HttpHelper(String url, CookieManager msCookieManager) {
         this.url = url;
+        this.msCookieManager = msCookieManager;
 
         stringBuilder = new StringBuilder();
     }
@@ -44,11 +47,7 @@ public class HttpHelper {
         connection.setDoInput(true);
         connection.setDoOutput(true);
 
-        if(msCookieManager.getCookieStore().getCookies().size() > 0) {
-            connection.setRequestProperty("Cookie:",
-                    TextUtils.join(",", msCookieManager.getCookieStore().getCookies()));
-        } else
-        {
+        if(msCookieManager.getCookieStore().getCookies().size() == 0) {
             connection.setRequestProperty("Cookie", "SID=-;path=/");
         }
 
@@ -86,6 +85,15 @@ public class HttpHelper {
 //        Log.d(LOG_TAG, "finishMultipart: " + stringBuilder.toString());
 
         outputStream.write((stringBuilder.toString()).getBytes());
+
+        Map<String, List<String>> headerFields = connection.getHeaderFields();
+        List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
+        if(cookiesHeader != null) {
+            for (String cookie : cookiesHeader)
+            {
+                msCookieManager.getCookieStore().add(new URI("http://stat.netis.du"), HttpCookie.parse(cookie).get(0));
+            }
+        }
     }
 
     public String getHeaders(){
@@ -117,17 +125,6 @@ public class HttpHelper {
     }
 
     public String getCookies() {
-/*
-        Map<String, List<String>> headerFields = connection.getHeaderFields();
-        List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
-
-        if(cookiesHeader != null) {
-            for (String cookie : cookiesHeader)
-            {
-                msCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
-            }
-        }
-*/
 
         if(msCookieManager.getCookieStore().getCookies().size() > 0) {
             return "Cookie: " + TextUtils.join(",", msCookieManager.getCookieStore().getCookies());
