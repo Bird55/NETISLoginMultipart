@@ -20,7 +20,7 @@ public class HttpHelper {
 
     private HttpURLConnection connection;
     private StringBuilder stringBuilder;
-
+    private String url;
     private static final String delimiter = "--";
     private static final String boundary =  "SwA"+Long.toString(System.currentTimeMillis())+"SwA";
 
@@ -29,12 +29,13 @@ public class HttpHelper {
     private static final String lineEnd = "\r\n";
 
 
-    public HttpHelper() {
+    public HttpHelper(String url) {
 //        cookies = null;
         stringBuilder = new StringBuilder();
+        this.url = url;
     }
 
-    public void connectForMultipart(String url) throws Exception {
+    public void connectForMultipart() throws Exception {
         connection = (HttpURLConnection) ( new URL(url)).openConnection();
         connection.setInstanceFollowRedirects(false);
         connection.setReadTimeout(10000);

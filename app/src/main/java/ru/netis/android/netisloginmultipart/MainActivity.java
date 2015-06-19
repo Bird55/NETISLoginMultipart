@@ -13,13 +13,30 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
-    private static final String LOG_TAG = "myLog";
-    private MenuItem item;
-//    private String url = "http://bah.yar.ru/test03";
-    private String url = "http://stat.netis.ru/login.pl";
+import java.net.CookieManager;
+import java.net.CookieStore;
+
+public class MainActivity extends Activity  implements AsyncTaskListener {
+    public static final String LOG_TAG = "myLog";
+    private static final String URL = "http://stat.netis.ru/login.pl";
     private TextView myTextView;
-    HttpHelper helper;
+
+    public static CookieStore cookies;
+    static {
+        CookieManager m = new CookieManager();
+        cookies = m.getCookieStore();
+    }
+
+    private HttpHelper helper;
+    {
+        try {
+            helper = new HttpHelper(URL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private MenuItem item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,25 +53,21 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 String param1 = edtText1.getText().toString();
                 String param2 = edtText2.getText().toString();
+                helper.addFormPart("user", param1);
+                helper.addFormPart("password", param2);
 
                 item.setActionView(R.layout.progress);
 
-                helper = new HttpHelper();
-                SendHttpRequestTask t = new SendHttpRequestTask(url);
-
-                String[] params = new String[]{param1, param2};
-                t.execute(params);
+                SendHttpRequestTask t = new SendHttpRequestTask(helper);
+                t.execute();
             }
         });
     }
 
-
+/*
     private class SendHttpRequestTask extends AsyncTask<String, Void, String> {
 
-        String url;
-        SendHttpRequestTask(String url){
-            this.url = url;
-        }
+
         @Override
         protected void onPreExecute() {
             item.setActionView(R.layout.progress);
@@ -67,12 +80,12 @@ public class MainActivity extends Activity {
             String data = null;
 
             try {
-                helper.connectForMultipart(url);
+                helper.connectForMultipart();
                 helper.addFormPart("user", param1);
                 helper.addFormPart("password", param2);
                 helper.finishMultipart();
                 data = helper.getResponse();
-                Log.d(LOG_TAG, "\r\n" + helper.getHeaders());
+//                Log.d(LOG_TAG, "\r\n" + helper.getHeaders());
                 Log.d(LOG_TAG, "\r\n" + helper.getCookies());
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -92,11 +105,17 @@ public class MainActivity extends Activity {
             myTextView.setText(s1);
         }
     }
+*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         item = menu.getItem(0);
         return true;
+    }
+
+    @Override
+    public void onAsyncTaskFinished() {
+
     }
 }
