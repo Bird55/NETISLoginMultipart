@@ -1,11 +1,8 @@
 package ru.netis.android.netisloginmultipart;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Spanned;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +14,7 @@ import java.net.CookieManager;
 import java.net.CookieStore;
 
 public class MainActivity extends Activity  implements AsyncTaskListener {
-    public static final String LOG_TAG = "myLog";
+
     private static final String URL = "http://stat.netis.ru/login.pl";
     private TextView myTextView;
 
@@ -54,7 +51,8 @@ public class MainActivity extends Activity  implements AsyncTaskListener {
             public void onClick(View v) {
                 String param1 = edtText1.getText().toString();
                 String param2 = edtText2.getText().toString();
-                helper.addFormPart("user", param1);
+                helper.addFormPart(new MultipartParameter("user", Constants.CONTENT_TYPE, param1));
+//                helper.addFormPart("user", param1);
                 helper.addFormPart("password", param2);
 
                 item.setActionView(R.layout.progress);

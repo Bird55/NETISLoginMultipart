@@ -26,8 +26,8 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
             helper.connectForMultipart();
             helper.finishMultipart();
             data = helper.getResponse();
-            Log.d(MainActivity.LOG_TAG, "\r\n" + helper.getHeaders());
-            Log.d(MainActivity.LOG_TAG, "\r\n" + helper.getCookies());
+            Log.d(Constants.LOG_TAG, "\r\n" + helper.getHeaders());
+            Log.d(Constants.LOG_TAG, "\r\n" + helper.getCookies());
         } catch (Throwable t) {
             t.printStackTrace();
         }

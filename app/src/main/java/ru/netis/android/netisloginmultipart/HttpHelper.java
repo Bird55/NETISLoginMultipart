@@ -57,11 +57,20 @@ public class HttpHelper {
         connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
     }
 
-    public void addFormPart(String paramName, String value) {
+    public HttpHelper addFormPart(String paramName, String value) {
         stringBuilder.append(delimiter).append(boundary).append(lineEnd);
         stringBuilder.append("Content-Type: text/plain\r\n");
         stringBuilder.append("Content-Disposition: form-data; name=\"").append(paramName).append("\"").append(lineEnd);
         stringBuilder.append(lineEnd).append(value).append(lineEnd);
+        return this;
+    }
+
+    public HttpHelper addFormPart(MultipartParameter param) {
+        stringBuilder.append(delimiter).append(boundary).append(lineEnd);
+        stringBuilder.append("Content-Type: ").append(param.getContentType()).append("\r\n");
+        stringBuilder.append("Content-Disposition: form-data; name=\"").append(param.getName()).append("\"").append(lineEnd);
+        stringBuilder.append(lineEnd).append(param.getContent()).append(lineEnd);
+        return this;
     }
 
     public void finishMultipart() throws Exception {
