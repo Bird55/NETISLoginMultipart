@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -31,9 +30,9 @@ public class HttpHelper {
     private static final String lineEnd = "\r\n";
 
 
-    public HttpHelper(String url, CookieManager msCookieManager) {
+    public HttpHelper(String url) {
         this.url = url;
-        this.msCookieManager = msCookieManager;
+       msCookieManager = MyApp.getInstance().getCookieManager();
 
         stringBuilder = new StringBuilder();
     }
@@ -91,7 +90,7 @@ public class HttpHelper {
         if(cookiesHeader != null) {
             for (String cookie : cookiesHeader)
             {
-                msCookieManager.getCookieStore().add(new URI("http://stat.netis.du"), HttpCookie.parse(cookie).get(0));
+                msCookieManager.getCookieStore().add(new URI("http://stat.netis.ru"), HttpCookie.parse(cookie).get(0));
             }
         }
     }

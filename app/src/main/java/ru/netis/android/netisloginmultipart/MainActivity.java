@@ -18,12 +18,8 @@ import java.net.CookieManager;
 
 public class MainActivity extends AppCompatActivity implements AsyncTaskListener {
 
-    private static final String URL = "http://stat.netis.ru/login.pl";
+    private static final String URL = "http://stat.netis.ru/saldo.pl";
     private TextView myTextView;
-
-    static CookieManager msCookieManager;
-
-    private HttpHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,30 +27,6 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskListener
         setContentView(R.layout.activity_main);
 
         myTextView = (TextView) findViewById(R.id.textView);
-        final EditText edtText1 = (EditText) findViewById(R.id.nameEditText);
-        final EditText edtText2 = (EditText) findViewById(R.id.passwordEditText);
-        Button btnUp1 = (Button) findViewById(R.id.button);
-
-        msCookieManager = (CookieManager) CookieHandler.getDefault();
-        if (msCookieManager == null) {
-            msCookieManager = new CookieManager();
-        }
-
-        final AsyncTaskListener listener = this;
-
-        btnUp1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String param1 = edtText1.getText().toString();
-                String param2 = edtText2.getText().toString();
-                helper = new HttpHelper(URL, msCookieManager);
-                helper.addFormPart(new MultipartParameter("user", Constants.CONTENT_TYPE, param1));
-                helper.addFormPart(new MultipartParameter("password", Constants.CONTENT_TYPE, param2));
-
-                SendHttpRequestTask t = new SendHttpRequestTask(helper, listener);
-                t.execute();
-            }
-        });
     }
 
     @Override
@@ -94,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskListener
 
     @Override
     public void onAsyncTaskFinished(String data) {
+        CookieManager msCookieManager = MyApp.getInstance().getCookieManager();
         myTextView.setText(Html.fromHtml(data));
         if(msCookieManager.getCookieStore().getCookies().size() > 0) {
             Log.d(Constants.LOG_TAG, "onAsyncTaskFinished Cookie: " + TextUtils.join(",", msCookieManager.getCookieStore().getCookies()));

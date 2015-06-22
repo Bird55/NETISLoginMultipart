@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskListene
         final Button buttonSubmit = (Button) findViewById(R.id.buttonSubmit);
 
         final AsyncTaskListener listener = this;
-        helper = new HttpHelper(URL, MainActivity.msCookieManager);
+        helper = new HttpHelper(URL);
 
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
