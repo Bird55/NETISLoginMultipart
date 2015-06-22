@@ -57,8 +57,12 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskListener
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.LOGIN_REQUEST && resultCode == RESULT_OK) {
-            String s = data.getStringExtra("html");
-            myTextView.setText(Html.fromHtml(s));
+            AsyncTaskListener listener = this;
+            HttpHelper helper = new HttpHelper(URL);
+            SendHttpRequestTask t = new SendHttpRequestTask(helper, listener);
+            t.execute();
+//            String s = data.getStringExtra("html");
+//            myTextView.setText(Html.fromHtml(s));
         } else {
             myTextView.setText("Error!");
         }

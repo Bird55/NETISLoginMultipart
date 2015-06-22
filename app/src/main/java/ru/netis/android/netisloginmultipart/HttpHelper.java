@@ -1,6 +1,7 @@
 package ru.netis.android.netisloginmultipart;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ import java.util.Map;
  * Created by bird on 02.06.2015
  */
 public class HttpHelper {
+    private static final String LOG_TAG = "myLog";
 
 //    private static final String LOG_TAG = "myLog";
 
@@ -32,8 +34,7 @@ public class HttpHelper {
 
     public HttpHelper(String url) {
         this.url = url;
-       msCookieManager = MyApp.getInstance().getCookieManager();
-
+        msCookieManager = MyApp.getInstance().getCookieManager();
         stringBuilder = new StringBuilder();
     }
 
@@ -47,9 +48,11 @@ public class HttpHelper {
         connection.setDoOutput(true);
 
         if(msCookieManager.getCookieStore().getCookies().size() == 0) {
+            Log.d(LOG_TAG, "connectForMultipart: Set cookie");
             connection.setRequestProperty("Cookie", "SID=-;path=/");
         }
 
+        connection.setRequestProperty("Referer", "stat.netis.ru/");
         connection.setRequestProperty("Connection", "Keep-Alive");
         connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
     }
@@ -85,14 +88,17 @@ public class HttpHelper {
 
         outputStream.write((stringBuilder.toString()).getBytes());
 
+/*
         Map<String, List<String>> headerFields = connection.getHeaderFields();
         List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
         if(cookiesHeader != null) {
-            for (String cookie : cookiesHeader)
-            {
+            Log.d(LOG_TAG, "finishMultipart ");
+            for (String cookie : cookiesHeader) {
+                Log.d(LOG_TAG, "finishMultipart " + HttpCookie.parse(cookie).get(0));
                 msCookieManager.getCookieStore().add(new URI("http://stat.netis.ru"), HttpCookie.parse(cookie).get(0));
             }
         }
+*/
     }
 
     public String getHeaders(){
